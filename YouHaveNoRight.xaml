@@ -1,0 +1,16 @@
+﻿<UserControl x:Class="Comissar2.YouHaveNoRight"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Comissar2">
+    <StackPanel>
+        <Image Width="800">
+            <Image.Source>
+                <BitmapImage 
+                    UriSource="./Assets/right.PNG" />
+            </Image.Source>
+        </Image>
+        <Button Click="Button_Click">OK</Button>
+    </StackPanel>
+</UserControl>

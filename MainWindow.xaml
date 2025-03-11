@@ -1,0 +1,142 @@
+﻿<Window x:Class="Comissar2.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:local="clr-namespace:Comissar2"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="510" Width="805">
+    <!--Window.DataContext>
+        <local:ProcessViewModel/>
+        
+    </Window.DataContext>
+    <Window.Resources>
+        <Style x:Key="Centering" TargetType="{x:Type TextBlock}">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="CenterGridHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+        
+    </Window.Resources> 
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+          
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Column="0" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" TextAlignment="Center" FontSize="16" FontWeight="Bold">Processes</TextBlock>
+
+
+            <StackPanel Grid.Row="1" Orientation="Horizontal">
+                <TextBlock Margin="10,5,10,5">Filter: </TextBlock>
+                <TextBox Name="FilterStringBox" Margin="0,5,5,5" Width="300"></TextBox>
+                <Button Command="{Binding filterCommand}" CommandParameter="{Binding ElementName=FilterStringBox, Path=Text}" Padding="10,0,10,0" Margin="0,5,0,5"> Go </Button>
+            </StackPanel>
+
+
+            <DataGrid Name="ProcessGrid" Grid.Row="2" AutoGenerateColumns="False" ItemsSource="{Binding Processes}" CanUserSortColumns="True" Sorting="ProcessGrid_Sorting"  VirtualizingPanel.IsVirtualizing="True" >
+                <DataGrid.Columns>
+                    <DataGridTextColumn HeaderStyle="{StaticResource CenterGridHeaderStyle}" ElementStyle="{StaticResource Centering}" Width="*" Header="Name"  Binding="{Binding Path=processObject.ProcessName}"/>
+                    <DataGridTemplateColumn   HeaderStyle="{StaticResource CenterGridHeaderStyle}" Header="Priority" Width="*">
+                        <DataGridTemplateColumn.CellTemplate >
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <TextBlock Visibility="Collapsed" Name="NoPrioritySelect">Access Denied</TextBlock>
+                                    <ComboBox  Visibility="Visible" Name="PrioritySelect" ItemsSource="{Binding Path=parent.priorityClasses}" SelectedItem="{Binding Path=processObject.PriorityClass, FallbackValue=null}">
+                                        <ComboBox.Resources>
+                                            <local:MultiConverter x:Key="multiConverter"/>
+                                        </ComboBox.Resources>
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="SelectionChanged">
+                                                <i:InvokeCommandAction Command="{Binding Path=parent.changePriorityCommand}">
+                                                    <i:InvokeCommandAction.CommandParameter>
+                                                        <MultiBinding Converter="{StaticResource multiConverter}">
+                                                            <Binding Path="processObject"/>
+                                                            <Binding  ElementName="PrioritySelect" Path="SelectedItem"/>
+                                                        </MultiBinding>
+                                                    </i:InvokeCommandAction.CommandParameter>
+                                                </i:InvokeCommandAction>
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
+                                    </ComboBox>
+                                </StackPanel>
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding Path=processObject.PriorityClass, FallbackValue=False}"  Value="False">
+                                        <Setter TargetName="NoPrioritySelect" Property="Visibility" Value="Visible"/>
+                                        <Setter TargetName="PrioritySelect" Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </DataTemplate.Triggers>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn HeaderStyle="{StaticResource CenterGridHeaderStyle}" ElementStyle="{StaticResource Centering}" Width="*" Header="Memory Used"  Binding="{Binding Path=processObject.NonpagedSystemMemorySize64}"/>
+                    <DataGridTemplateColumn  HeaderStyle="{StaticResource CenterGridHeaderStyle}" Width="*" Header="Kill Process">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Command="{Binding Path=parent.killCommand}" CommandParameter="{Binding Path=processObject}">
+                                    Murder
+                                </Button>
+                           
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn  HeaderStyle="{StaticResource CenterGridHeaderStyle}" Width="*" Header="Kill Process">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Command="{Binding Path=parent.detailsCommand}" CommandParameter="{Binding Path=processObject}">
+                                    Details
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+            <StackPanel Grid.Row="3">
+                <Button Command="{Binding refreshCommand}">Refresh</Button>
+                <StackPanel Orientation="Horizontal"  HorizontalAlignment="Center">
+                    <StackPanel.Resources>
+                        <Style x:Key="Spacing" TargetType="{x:Type FrameworkElement}">
+                            <Setter Property="Margin" Value="10,10,10,10"/>
+                        </Style>
+                    </StackPanel.Resources>
+                    <TextBlock Style="{StaticResource Spacing}"> Auto Refresh:</TextBlock>
+                    <CheckBox Style="{StaticResource Spacing}" Name="AutoRefreshEnabled" IsChecked="{Binding autorefresh}">Enabled</CheckBox>
+                    <TextBlock IsEnabled="{Binding ElementName=AutoRefreshEnabled, Path=IsChecked}" Style="{StaticResource Spacing}"> Refresh time [seconds]:</TextBlock>
+                    <TextBox IsEnabled="{Binding ElementName=AutoRefreshEnabled, Path=IsChecked}" InputScope="Number" Style="{StaticResource Spacing}" Text="{Binding refreshTimer}"></TextBox>
+                </StackPanel>
+            </StackPanel>
+
+        </Grid>
+        
+    </Grid-->
+    
+
+    <StackPanel >
+        <TabControl Name="Tabs">
+            <TabItem Header="Processes" Name="ProcessesTab">
+                <local:ProcessesControl Height="450">
+                </local:ProcessesControl>
+            </TabItem>
+            <TabItem Header="Tasks" Height="20">
+                <local:TasksControl/>
+            </TabItem>
+        </TabControl>
+    </StackPanel>
+    
+
+</Window>

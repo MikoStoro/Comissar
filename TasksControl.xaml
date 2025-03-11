@@ -1,0 +1,67 @@
+﻿<UserControl x:Class="Comissar2.TasksControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Comissar2"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.DataContext>
+        <local:TasksViewModel/>
+    </UserControl.DataContext>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Grid.Column="0" TextAlignment="Center" FontSize="16" FontWeight="Bold">Tasks</TextBlock>
+        <DataGrid  CanUserAddRows="False" Grid.Row="1" Grid.Column="0" ItemsSource="{Binding ViewSource.View}" AutoGenerateColumns="False" >
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="ToolTip">
+                        <Setter.Value>
+                            <TextBlock Text="{Binding Path=ToolTipText}" />
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </DataGrid.RowStyle>
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Command" Binding="{Binding Path=command}"/>
+                <DataGridTextColumn Header="Next execution" Binding="{Binding Path=nextExecution}"/>
+                <DataGridTextColumn Header="Cyclic" Binding="{Binding Path=cyclic}"/>
+                <DataGridTextColumn Header="Execution Interval" Binding="{Binding Path=executionInterval}"/>
+                <DataGridTextColumn Header="Times executed" Binding="{Binding Path=executionCount}"/>
+                <DataGridTextColumn Header="Last Output" Binding="{Binding Path=lastResult}"/>
+              
+                <DataGridTemplateColumn Header="Delete Task">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Command="{Binding Path=parent.removeTask}" CommandParameter="{Binding}">Remove</Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <StackPanel Grid.Row="2" Grid.Column="0">
+            <Button Command="{Binding refreshCommand}">Refresh</Button>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock  Margin="5,5,5,5">Command:</TextBlock>
+                <TextBox Text="{Binding currentTaskCommand}" Margin="5,5,5,5" MinWidth="200"></TextBox>
+                <TextBlock  Margin="5,5,5,5"> Start in [seconds]:</TextBlock>
+                <TextBox Text="{Binding currentTaskStart}"  Margin="5,5,5,5" MinWidth="50"></TextBox>
+                <CheckBox Name="RepeatCheckbox" IsChecked="{Binding currentTaskCyclic}" Margin="5,5,5,5">Repeat</CheckBox>
+                <TextBlock Margin="5,5,5,5">Every [seconds]:</TextBlock>
+                <TextBox  IsEnabled="{Binding ElementName=RepeatCheckbox, Path=IsChecked}" Text="{Binding currentTaskRepeat}" Margin="5,5,5,5" MinWidth="50"></TextBox>
+                <Button Margin="5,5,5,5" Command="{Binding createTask}">Create Task</Button>
+            </StackPanel>
+        </StackPanel>
+
+
+    </Grid>
+</UserControl>
